@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from superlinked import framework as sl
 import sys
-from utills import load_data, build_superlinked_app, simple_search, weighted_search, numeric_search
+from utills import load_data, build_superlinked_app, simple_search, weighted_search, numeric_search, combined_search
 
 # ---- Streamlit UI ----
 st.title("🥦 Semantic Search on Food Database")
@@ -19,7 +19,7 @@ app, index, food_item, description_space, food_category_text_space, food_categor
 
 mode = st.sidebar.radio(
     "Select Search Mode",
-    ["Simple Search", "Weighted Search", "Numeric Search", "Recommendations"]
+    ["Simple Search", "Weighted Search", "Numeric Search", "Combined Search"]
 )
 
 if mode == "Simple Search":
@@ -31,7 +31,9 @@ if mode == "Weighted Search":
 if mode == "Numeric Search":  
     numeric_search(food_item, description_space, energy_space, index, app)
  
- 
+if mode == "Combined Search":
+    categories = df.food_category.drop_duplicates().to_list()
+    combined_search(food_item, description_space, food_category_categorical_space, energy_space, index, app, categories)
 
                 
 # ---- Run the app ----
