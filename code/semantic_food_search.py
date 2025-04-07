@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 from superlinked import framework as sl
 import sys
-from utills import load_data, build_superlinked_app, simple_search, weighted_search, numeric_search, combined_search
+from queries import simple_search, weighted_search, numeric_search, combined_search
+from utills import load_data, build_superlinked_app
 
 # ---- Streamlit UI ----
 st.title("🥦 Semantic Search on Food Database")
