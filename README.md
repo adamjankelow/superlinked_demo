@@ -77,6 +77,8 @@ Helper functions for:
 - Schema definitions
 
 ### `notebooks/`
-Contains a Jupyter notebook demonstrating:
-- Translation of raw food database to structured format with LLMs
+The Jupyter notebook includes demonstrations of the following:
+- Exploring potential improvements for enabling multi-language search with Streamlit.
+- Translating a raw food database into a structured format using Large Language Models (LLMs).
+- Utilizing additional parameters created for enhanced search capabilities with Superlinked.
 
