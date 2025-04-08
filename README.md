@@ -80,17 +80,3 @@ Helper functions for:
 Contains a Jupyter notebook demonstrating:
 - Translation of raw food database to structured format with LLMs
 
-
-
-```setup.sh
-
-# venv
-
-python3 -m venv venv
-. venv/bin/activate
-pip install -r requirements.txt
-
-# how to run
-<run command>
-
-```
