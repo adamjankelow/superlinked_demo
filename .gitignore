@@ -7,3 +7,4 @@ __pycache__/
 *.pyz
 .env
 notebooks/umap.ipynb
+notebooks/food_database_demo.ipynb
