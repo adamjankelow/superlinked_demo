@@ -1,13 +1,13 @@
 # Semantic Food Search Demo
 
-A powerful semantic search engine for food items built with Superlinked and Streamlit. This demo showcases advanced search capabilities including semantic similarity, multi-criteria weighted search, and numeric range filtering.
+A demo semantic search engine for food items built with Superlinked and Streamlit. This demo showcases advanced search capabilities including semantic similarity, multi-criteria weighted search, and numeric range filtering.
 
 ## Features
 
 ### Simple Semantic Search
 - Natural language search for food items based on descriptions
-- Returns semantically similar results even with partial matches
-- Powered by state-of-the-art language models
+- Returns semantically similar results based off text
+
 
 ### Multi-Criteria Weighted Search  
 - Combine text descriptions and food categories
@@ -27,19 +27,58 @@ A powerful semantic search engine for food items built with Superlinked and Stre
 - Flexible combination of search criteria
 - Optimized for intuitive exploration
 
-## Installation
 
-1. Clone the repository:
+## 🔧 Installation
 
-#TODOs
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
+   ```
 
--add init 
-- clean up readme
+2. **Set Up a Virtual Environment:**
+   - Create a virtual environment:
+     ```bash
+     python3 -m venv venv
+     ```
+   - Activate the virtual environment (on Linux):
+     ```bash
+     source venv/bin/activate
+     ```
 
-Qs
-- loading data more efficiently
-- documentation
-- make sure easy for somewhere else to use package ie requiremnts 
+3. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the Streamlit App:**
+   - From the root of the project directory, execute:
+     ```bash
+     streamlit run code/semantic_food_search.py
+     ```
+
+## Code Structure
+
+### `code/semantic_food_search.py`
+Main Streamlit application entry point that handles the UI and coordinates between different search modes.
+
+### `queries.py` 
+Contains the core search functionality implementations:
+- Simple semantic search
+- Weighted multi-criteria search  
+- Numeric range filtering
+- Combined search with categories
+
+### `utils.py`
+Helper functions for:
+- Data loading and preprocessing
+- Building the Superlinked search index
+- UMAP visualization
+- Schema definitions
+
+### `notebooks/`
+Contains a Jupyter notebook demonstrating:
+- Translation of raw food database to structured format with LLMs
 
 
 
