@@ -29,6 +29,7 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 
 
 ## 🔧 Installation
+Python version: >=3.11 recommended
 
 1. **Clone the Repository:**
    ```bash
