@@ -1,22 +1,38 @@
-# superlinked_demo
+# Semantic Food Search Demo
 
-A semantic food search demo using Superlinked and Streamlit.
+A powerful semantic search engine for food items built with Superlinked and Streamlit. This demo showcases advanced search capabilities including semantic similarity, multi-criteria weighted search, and numeric range filtering.
 
 ## Features
-- Simple text-based semantic search
-- Weighted multi-criteria search
-- Numeric range search with semantic similarity
-- Built with Superlinked framework and Streamlit
 
-## Usage
-1. Install requirements: `pip install -r requirements.txt`
-2. Run the app: `streamlit run code/semantic_food_search.py`
+### Simple Semantic Search
+- Natural language search for food items based on descriptions
+- Returns semantically similar results even with partial matches
+- Powered by state-of-the-art language models
 
-The demo uses a sample food database to demonstrate semantic search capabilities.
+### Multi-Criteria Weighted Search  
+- Combine text descriptions and food categories
+- Adjust weights to fine-tune search relevance
+- Interactive visualization of search results using UMAP
+- See how different weights affect the results in real-time
+
+### Numeric Range Search
+- Filter by nutritional values like calories
+- Combine numeric and semantic criteria
+- Visual analysis of results with interactive charts
+- Calculate statistics across search results
+
+### Combined Search
+- Unified interface for all search modes
+- Hard filtering by food categories
+- Flexible combination of search criteria
+- Optimized for intuitive exploration
+
+## Installation
+
+1. Clone the repository:
 
 #TODOs
-- add llm and rag
-- make pca dynamic
+
 -add init 
 - clean up readme
 

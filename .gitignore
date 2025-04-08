@@ -1,10 +1,15 @@
-venv/
+
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.pyw
 *.pyz
-.env
 notebooks/umap.ipynb
 notebooks/food_database_demo.ipynb
+venv/
+venv/
+.DS_Store
+.env
+
+
