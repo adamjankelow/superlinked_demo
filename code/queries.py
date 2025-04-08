@@ -3,7 +3,7 @@ import os
 import streamlit as st
 from superlinked import framework as sl
 import numpy as np
-
+from utills import create_umap_df, plot_umap_scatter
 
 cols_to_display = ["description", "food_category", "calories", 'similarity_score']
 def simple_search(food_item: str, description_space: str, index: object, app: object) -> None:
@@ -56,8 +56,8 @@ def weighted_search(food_item: str, description_space: str, food_category_text_s
     - None: Displays results directly in the Streamlit app.
     """
     st.markdown("Superlinked supports weighted search. Use the sliders below to adjust the weights of the description and category search spaces to see how they affect the results.")
-    query = st.text_input("Search for a food")
-    food_category = st.text_input("Search for a food category")
+    query = st.text_input("Search for a food", "lemon")
+    food_category = st.text_input("Search for a food category", "dessert")
     desc_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
     cat_weight = st.slider("Category weight", -3.0, 3.0, 1.0)
 
@@ -75,7 +75,17 @@ def weighted_search(food_item: str, description_space: str, food_category_text_s
             .select_all()
         )
         result = app.query(q, food_item=query, food_category=food_category, desc_weight=desc_weight, cat_weight=cat_weight)
-        st.dataframe(sl.PandasConverter.to_pandas(result)[cols_to_display])
+        
+        result_df = sl.PandasConverter.to_pandas(result)
+    
+        result_df.sort_values(by='similarity_score', ascending=False, inplace=True)
+        top_10_results = result_df.head(10)
+         
+        st.dataframe(top_10_results)
+        umap_df = create_umap_df(app, index, food_item, top_10_results)
+        plot_umap_scatter(umap_df)
+       
+        return result_df
 
 def numeric_search(food_item: str, description_space: str, energy_space: str, index: object, app: object) -> None:
     """
@@ -148,7 +158,7 @@ def combined_search(food_item: str, description_space: str, food_category_catego
     desc_input = st.text_input("Search for a food")
     energy_input = st.number_input("Search for a calorie value per 100g", min_value=0, max_value=1000)
     
-    categorical_query = (
+    query = (
         sl.Query(index, weights={
             description_space: sl.Param("desc_weight"),
             energy_space: sl.Param("energy_weight")
@@ -160,7 +170,7 @@ def combined_search(food_item: str, description_space: str, food_category_catego
         .select_all()
     )
     
-    result = app.query(categorical_query, query_categories=food_category_input, query_text=desc_input, energy_intake_per_100g=energy_input, desc_weight=1.5, energy_weight=1)
+    result = app.query(query, query_categories=food_category_input, query_text=desc_input, energy_intake_per_100g=energy_input, desc_weight=1.5, energy_weight=1)
     
     result_df = sl.PandasConverter.to_pandas(result)[cols_to_display]
     
@@ -168,3 +178,5 @@ def combined_search(food_item: str, description_space: str, food_category_catego
         st.dataframe(result_df)
     else:
         st.error("No results found. Try changing the search parameters.")
+        
+    return result_df

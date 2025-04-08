@@ -1,21 +1,23 @@
 import pandas as pd
 import os
 import streamlit as st
-from superlinked import framework as sl
 import numpy as np
-
+import matplotlib.pyplot as plt
+import seaborn as sns
+from adjustText import adjust_text
+from superlinked import framework as sl
 
 # ---- Load Data ----
 @st.cache_data
-def load_data():
+def load_data(sample_size=300):
     current_dir = os.path.dirname(__file__)
     
     # Construct the absolute path to the dataset
-    dataset_path = os.path.join(current_dir, "../data/sr_legacy_food_db.parquet")
+    dataset_path = os.path.join(current_dir, "../data/sr_legacy_food_db_clean.parquet")
     absolute_path = os.path.abspath(dataset_path)
     df = pd.read_parquet(absolute_path)  # replace with your dataset path
     df = df.dropna(subset=["description", "food_category", "Energy"]).rename(columns={"Energy": "calories"})
-    return df.sample(n=200)
+    return df.sample(n=sample_size)
 
 
 
@@ -42,14 +44,14 @@ def build_superlinked_app(df):
         category_input=food_item.food_category,
         categories=categories
     )
-    energy_space = sl.NumberSpace(
+    calories_space = sl.NumberSpace(
         food_item.calories,
         min_value=0,
         max_value=1000,
         mode=sl.Mode.SIMILAR
 )
 
-    index = sl.Index([description_space, food_category_text_space, food_category_categorical_space, energy_space])
+    index = sl.Index([description_space, food_category_text_space, food_category_categorical_space, calories_space])
 
     # Set up engine
     source = sl.InMemorySource(food_item)
@@ -61,118 +63,74 @@ def build_superlinked_app(df):
         df[["fdc_id", "description", "food_category", "calories"]].to_dict(orient="records")
     )
 
-    return app, index, food_item, description_space, food_category_text_space, food_category_categorical_space, energy_space
+    return app, index, food_item, description_space, food_category_text_space, food_category_categorical_space, calories_space
 
 
-# #queries
-# def simple_search(food_item, description_space, index, app):
-#     st.markdown("Use this app to search for food items based on their descriptions. Enter a query below to get started.")
- 
-#     query_input = st.text_input("Search for a food", "cereal with sugar")
+def create_umap_df(app, index, food_item , results_df:pd.DataFrame, n_results:int=20):
+    """
+    Create a DataFrame with UMAP transformed vectors and food metadata
     
-#     if query_input:
-#         with st.spinner('Searching...'):
-#             try:
-#                 query = (
-#                     sl.Query(index)
-#                 .find(food_item)
-#                 .similar(description_space, sl.Param("query_text"))
-#                 .select_all()
-#                 )
-
-#                 result = app.query(query, query_text=query_input)
-#                 df_result = sl.PandasConverter.to_pandas(result)[["description", "food_category", "calories", 'similarity_score']]
-#                 st.write(f"🔍 Top results for: **{query_input}**")
-#                 st.dataframe(df_result)
-#             except Exception as e:
-#                 st.error(f"An error occurred: {e}")
-                
-# def weighted_search(food_item, description_space, food_category_text_space, food_category_categorical_space, index, app):
-#     st.markdown("Superlinked supports weighted search. Use the sliders below to adjust the weights of the description and category search spaces to see how they affect the results.")
-#     query = st.text_input("Search for a food")
-#     food_category = st.text_input("Search for a food category")
-#     desc_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
-#     cat_weight = st.slider("Category weight", -3.0, 3.0, 1.0)
-
-#     if query:
-#         q = (
-#             sl.Query(index, weights={description_space: sl.Param("desc_weight"), food_category_text_space: sl.Param("cat_weight"), food_category_categorical_space: sl.Param("cat_weight")})
-#             .find(food_item)
-#             .similar(description_space, sl.Param("food_item"))
-#             .similar(food_category_text_space, sl.Param("food_category"))
-#             .similar(food_category_categorical_space, sl.Param("query_text"))
-#             .select_all()
-#         )
-#         result = app.query(q, food_item=query, food_category=food_category, desc_weight=desc_weight, cat_weight=cat_weight)
-#         st.dataframe(sl.PandasConverter.to_pandas(result))
+    Args:
+        app: Superlinked app instance
+        index: Index name
+        food_item: Food item name
+        results_df: DataFrame containing search results
+        n_results: Number of top results to include
         
-# def numeric_search(food_item, description_space, energy_space, index, app):
-#     st.markdown("We can also include numeric spaces in our search. See how the results change as we change the weights of the description and calories. Include a bar to show the calories of the top 10 results.")
-#     desc_input = st.text_input("Search for a food")
-#     energy_input = st.number_input("Search for a calorie value per 100g", min_value=0, max_value=1000)
-#     desc_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
-#     energy_weight = st.slider("Energy weight", -3.0, 3.0, 1.0)
-#     if desc_input and energy_input:
-#         with st.spinner('Searching...'):
-#             try:
-#                 query = (
-#                     sl.Query(index,
-#                             weights={
-#                             description_space: sl.Param("desc_weight"),
-#                             energy_space: sl.Param("energy_weight")
-#                         }
-#                     )
-#                     .find(food_item)
-#                     .similar(description_space, sl.Param("query_text"))
-#                     .similar(energy_space, sl.Param("energy_intake_per_100g"))
-#                     .select_all()
-#                 )
-#                 result = app.query(query, query_text=desc_input, energy_intake_per_100g=energy_input, desc_weight=desc_weight, energy_weight=energy_weight)
-#                 df_result = sl.PandasConverter.to_pandas(result)[["description", "food_category", "calories", 'similarity_score']]
-                
-#                  # Calculate mean of the top 10 results
-#                 mean_calories = df_result['calories'].head(10).mean() if not df_result.empty else 0
-#                 st.write(f"🔍 Top results for: **{desc_input}**")
-#                 top_10_results = df_result.head(10)
-#                 st.write(f"📊 Mean calories of top 10 results: **{mean_calories:.2f}**")
-#                     # Display a bar chart for the mean calories
-#                                # Display a bar chart for the calories of the top 10 items
-#                 st.bar_chart(top_10_results.set_index('description')['calories'])
-#                 st.dataframe(top_10_results)
-              
-                
-#             except Exception as e:
-#                 st.error(f"An error occurred: {e}")
-                
-                
-# def combined_search(food_item, description_space, food_category_categorical_space, energy_space, index, app, categories):
+    Returns:
+        DataFrame containing UMAP coordinates and food metadata
+    """
+    # Collect all vectors from the app
+    import umap
+    vs = sl.VectorSampler(app=app)
+    vector_collection = vs.get_all_vectors(index, food_item)
+    vectors = vector_collection.vectors
+    vector_df = pd.DataFrame(vectors, index=[int(id_) for id_ in vector_collection.id_list])
     
-#     st.markdown("Combining categorical, numerical and text search. We use a hard filtering for the categorical space.")
+    # Transform vectors using UMAP
+    umap_transform = umap.UMAP(random_state=0, transform_seed=0, n_jobs=1, metric="cosine")
+    umap_transform = umap_transform.fit(vector_df)
+    umap_vectors = umap_transform.transform(vector_df)
+    umap_df = pd.DataFrame(umap_vectors, columns=["dimension_1", "dimension_2"], index=vector_df.index)
+
+    # Join with results metadata
+    results_df.id = results_df.id.astype(int)
+    umap_df = umap_df.join(results_df.head(n_results).set_index('id')[['description', 'food_category']], how='inner')
     
-    
-#     food_category_input = st.selectbox("Select a food category", categories)
-#     desc_input = st.text_input("Search for a food")
-#     energy_input = st.number_input("Search for a calorie value per 100g", min_value=0, max_value=1000)
-    
-   
-#     categorical_query = (
-#         sl.Query(index, weights={
-#                             description_space: sl.Param("desc_weight"),
-#                             energy_space: sl.Param("energy_weight")
-#                         })
-#         .find(food_item)
-#         .similar(food_category_categorical_space.category, sl.Param("query_categories"))  # Check if this is correct
-#         .similar(description_space, sl.Param("query_text"))  # Check if this is correct
-#         .similar(energy_space, sl.Param("energy_intake_per_100g"))  # Check if this is correct
-#         .select_all()
-#     )
-#     result = app.query(categorical_query, query_categories=food_category_input, query_text=desc_input, energy_intake_per_100g=energy_input, desc_weight= 1.5, energy_weight=1)
-    
-#     result_df = sl.PandasConverter.to_pandas(result)[["description", "food_category", "calories", 'similarity_score']]
-    
-#     if len(result_df) > 0:
-#         st.dataframe(result_df)
-#     else:
-#         st.error("No results found. Try changing the search parameters.")
-    
- 
+    return umap_df
+
+# Create UMAP DataFrame
+
+def plot_umap_scatter(umap_df):
+    # Add a title and introductory text
+    st.title("UMAP Visualization of Food Items")
+    st.write("Here you can see the UMAP transformed vectors of the top 10 food items from the search results. Each point represents a food item, colored by its category.")
+
+    # Create the figure
+    plt.figure(figsize=(12, 8))
+    sns.scatterplot(
+        x='dimension_1', 
+        y='dimension_2', 
+        hue='food_category', 
+        data=umap_df.head(10), 
+        s=100,  # Size of the dots
+        palette='viridis'
+    )
+
+    # Collect text objects for adjustment
+    texts = []
+    for i, row in umap_df.head(10).iterrows():
+        text = plt.text(row['dimension_1'] + 0.1, row['dimension_2'], row['description'], fontsize=9)
+        texts.append(text)
+
+    # Adjust text to avoid overlap
+    adjust_text(texts, arrowprops=dict(arrowstyle='->', color='gray', lw=0.5))
+
+    plt.title('UMAP Transformed Vectors of top 10 food items of search results')
+    plt.xlabel('Dimension 1')
+    plt.ylabel('Dimension 2')
+    plt.legend(title='Food Category', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+
+    # Display the plot in the Streamlit app
+    st.pyplot(plt)
