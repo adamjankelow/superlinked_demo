@@ -11,5 +11,7 @@ venv/
 venv/
 .DS_Store
 .env
+notebooks/PhenoDS/
+code/PhenoDS/
 
 

@@ -4,9 +4,10 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
 from adjustText import adjust_text
 from superlinked import framework as sl
-
+from huggingface_hub import snapshot_download
 # ---- Load Data ----
 @st.cache_data
 def load_data():
@@ -32,11 +33,36 @@ class FoodItem(sl.Schema):
 def build_superlinked_app(df):
     food_item = FoodItem()
     categories = df["food_category"].unique().tolist()
+    
+    # model_path = Path("PhenoDS/superlinked_demo/models/all-MiniLM-L6-v2").resolve()
 
-    # Spaces
-    description_space = sl.TextSimilaritySpace(text=food_item.description, model="all-MiniLM-L6-v2")
-    # Semantic similarity over food category text
-    food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model="all-MiniLM-L6-v2")
+    # description_space = sl.TextSimilaritySpace(
+    #     text=food_item.description,
+    #     model="all-MiniLM-L6-v2",
+    #     model_cache_dir=model_path)  # must be a Path, not str
+        
+    # food_category_text_space = sl.TextSimilaritySpace(
+    #     text= food_item.food_category,
+    #     model="all-MiniLM-L6-v2",
+    #     model_cache_dir=model_path)  # must be a Path, not str
+    
+  
+    model_path = Path(snapshot_download("sentence-transformers/all-MiniLM-L6-v2"))
+
+    # Create the similarity space using the schema field
+    description_space = sl.TextSimilaritySpace(
+            text=food_item.description,  # <-- must be a valid schema field
+            model="all-MiniLM-L6-v2",
+            model_cache_dir=model_path
+        )
+    
+   
+    food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model="all-MiniLM-L6-v2", model_cache_dir=model_path)
+
+    # # Spaces
+    # description_space = sl.TextSimilaritySpace(text=food_item.description, model="../models/all-MiniLM-L6-v2")
+    # # Semantic similarity over food category text
+    # food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model="../models/all-MiniLM-L6-v2")
 
     # Exact/category-level similarity (discrete match)
     food_category_categorical_space = sl.CategoricalSimilaritySpace(
