@@ -6,7 +6,7 @@ import numpy as np
 from utills import create_umap_df, plot_umap_scatter
 
 cols_to_display = ["description", "food_category", "calories", 'similarity_score']
-def simple_search(food_item: str, description_space: str, index: object, app: object) -> None:
+def simple_search(food_item, description_space: str, index: object, app: object) -> None:
     """
     Perform a simple search for food items based on their descriptions.
 
@@ -19,9 +19,9 @@ def simple_search(food_item: str, description_space: str, index: object, app: ob
     Returns:
     - None: Displays results directly in the Streamlit app.
     """
-    st.markdown("Use this app to search for food items based on their descriptions. Enter a query below to get started.")
- 
-    query_input = st.text_input("Search for a food", "cereal with sugar")
+    st.markdown("Search for food items. Just type a query below to explore matches based on the item's description.")
+
+    query_input = st.text_input("Food description", "cereal with sugar")
     
     if query_input:
         with st.spinner('Searching...'):
@@ -40,7 +40,7 @@ def simple_search(food_item: str, description_space: str, index: object, app: ob
             except Exception as e:
                 st.error(f"An error occurred: {e}")
 
-def weighted_search(food_item: str, description_space: str, food_category_text_space: str, food_category_categorical_space: str, index: object, app: object) -> None:
+def weighted_search(food_item , description_space: str, food_category_text_space: str, food_category_categorical_space: str, index: object, app: object) -> None:
     """
     Perform a weighted search for food items based on user-defined weights.
 
@@ -56,8 +56,8 @@ def weighted_search(food_item: str, description_space: str, food_category_text_s
     - None: Displays results directly in the Streamlit app.
     """
     st.markdown("Superlinked supports weighted search. Use the sliders below to adjust the weights of the description and category search spaces to see how they affect the results.")
-    query = st.text_input("Search for a food", "lemon")
-    food_category = st.text_input("Search for a food category", "dessert")
+    query = st.text_input("Food description", "apple")
+    food_category = st.text_input("Food category", "dessert")
     desc_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
     cat_weight = st.slider("Category weight", -3.0, 3.0, 1.0)
 
@@ -87,7 +87,7 @@ def weighted_search(food_item: str, description_space: str, food_category_text_s
        
         return result_df
 
-def numeric_search(food_item: str, description_space: str, energy_space: str, index: object, app: object) -> None:
+def numeric_search(food_item , description_space: str, calories_space: str, index: object, app: object) -> None:
     """
     Perform a numeric search for food items based on calorie values.
 
@@ -102,25 +102,25 @@ def numeric_search(food_item: str, description_space: str, energy_space: str, in
     - None: Displays results directly in the Streamlit app.
     """
     st.markdown("We can also include numeric spaces in our search. See how the results change as we change the weights of the description and calories. Include a bar to show the calories of the top 10 results.")
-    desc_input = st.text_input("Search for a food")
-    energy_input = st.number_input("Search for a calorie value per 100g", min_value=0, max_value=1000)
+    desc_input = st.text_input("Food description", "chicken")
+    calories_input = st.number_input("Calories per 100g", min_value=0, max_value=1000, value=200)
     desc_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
-    energy_weight = st.slider("Energy weight", -3.0, 3.0, 1.0)
+    calories_weight = st.slider("Calories weight", -3.0, 3.0, 1.0)
 
-    if desc_input and energy_input:
+    if desc_input and calories_input:
         with st.spinner('Searching...'):
             try:
                 query = (
                     sl.Query(index, weights={
                         description_space: sl.Param("desc_weight"),
-                        energy_space: sl.Param("energy_weight")
+                        calories_space: sl.Param("calories_weight")
                     })
                     .find(food_item)
                     .similar(description_space, sl.Param("query_text"))
-                    .similar(energy_space, sl.Param("energy_intake_per_100g"))
+                    .similar(calories_space, sl.Param("calories_intake_per_100g"))
                     .select_all()
                 )
-                result = app.query(query, query_text=desc_input, energy_intake_per_100g=energy_input, desc_weight=desc_weight, energy_weight=energy_weight)
+                result = app.query(query, query_text=desc_input, calories_intake_per_100g=calories_input, desc_weight=desc_weight, calories_weight=calories_weight)
                 df_result = sl.PandasConverter.to_pandas(result)[cols_to_display]
                 
                 # Calculate mean of the top 10 results
@@ -136,7 +136,7 @@ def numeric_search(food_item: str, description_space: str, energy_space: str, in
             except Exception as e:
                 st.error(f"An error occurred: {e}")
 
-def combined_search(food_item: str, description_space: str, food_category_categorical_space: str, energy_space: str, index: object, app: object, categories: list) -> None:
+def combined_search(food_item , description_space: str, food_category_categorical_space: str, calories_space: str, index: object, app: object, categories: list) -> None:
     """
     Combine categorical, numerical, and text search for food items.
 
@@ -144,7 +144,7 @@ def combined_search(food_item: str, description_space: str, food_category_catego
     - food_item (str): The food item schema.
     - description_space (str): The description space for similarity.
     - food_category_categorical_space (str): The categorical space for food categories.
-    - energy_space (str): The energy space for calorie values.
+    - calories_space (str): The energy space for calorie values.
     - index (object): The index used for querying.
     - app (object): The application instance for querying.
     - categories (list): List of food categories for selection.
@@ -154,23 +154,23 @@ def combined_search(food_item: str, description_space: str, food_category_catego
     """
     st.markdown("Combining categorical, numerical and text search. We use a hard filtering for the categorical space.")
     
-    food_category_input = st.selectbox("Select a food category", categories)
-    desc_input = st.text_input("Search for a food")
-    energy_input = st.number_input("Search for a calorie value per 100g", min_value=0, max_value=1000)
+    food_category_input = st.selectbox("Food category", categories)
+    desc_input = st.text_input("Food description")
+    calories_input = st.number_input("Calories per 100g", min_value=0, max_value=1000)
     
     query = (
         sl.Query(index, weights={
             description_space: sl.Param("desc_weight"),
-            energy_space: sl.Param("energy_weight")
+            calories_space: sl.Param("calories_weight")
         })
         .find(food_item)
         .similar(food_category_categorical_space.category, sl.Param("query_categories"))
         .similar(description_space, sl.Param("query_text"))
-        .similar(energy_space, sl.Param("energy_intake_per_100g"))
+        .similar(calories_space, sl.Param("calories_intake_per_100g"))
         .select_all()
     )
     
-    result = app.query(query, query_categories=food_category_input, query_text=desc_input, energy_intake_per_100g=energy_input, desc_weight=1.5, energy_weight=1)
+    result = app.query(query, query_categories=food_category_input, query_text=desc_input, calories_intake_per_100g=calories_input, desc_weight=1.5, calories_weight=1)
     
     result_df = sl.PandasConverter.to_pandas(result)[cols_to_display]
     

@@ -4,13 +4,6 @@ from superlinked import framework as sl
 import sys
 from queries import simple_search, weighted_search, numeric_search, combined_search
 from utills import load_data, build_superlinked_app, create_umap_df, plot_umap_scatter
-
-"""
-import os 
-
-OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-
-"""
 # ---- Streamlit UI ----
 st.title("🥦 Semantic Search on Food Database")
 

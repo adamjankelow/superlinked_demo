@@ -9,15 +9,14 @@ from superlinked import framework as sl
 
 # ---- Load Data ----
 @st.cache_data
-def load_data(sample_size=300):
+def load_data():
     current_dir = os.path.dirname(__file__)
     
     # Construct the absolute path to the dataset
-    dataset_path = os.path.join(current_dir, "../data/sr_legacy_food_db_clean.parquet")
+    dataset_path = os.path.join(current_dir, "../data/sampled_food_db.parquet")
     absolute_path = os.path.abspath(dataset_path)
     df = pd.read_parquet(absolute_path)  # replace with your dataset path
-    df = df.dropna(subset=["description", "food_category", "Energy"]).rename(columns={"Energy": "calories"})
-    return df.sample(n=sample_size)
+    return df
 
 
 
