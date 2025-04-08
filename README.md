@@ -61,6 +61,7 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 
 ### `code/semantic_food_search.py`
 Main Streamlit application entry point that handles the UI and coordinates between different search modes.
+It should open in browser: http://localhost:8501
 
 ### `queries.py` 
 Contains the core search functionality implementations:

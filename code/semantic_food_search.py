@@ -24,11 +24,9 @@ mode = st.sidebar.radio(
 
 if mode == "Simple Search":
     food_item_df = simple_search(food_item, description_space, index, app)
-    
                 
 if mode == "Weighted Search":
     food_item_df = weighted_search(food_item, description_space, food_category_text_space, food_category_categorical_space, index, app)
-    
     
 if mode == "Numeric Search":  
     numeric_search(food_item, description_space, calories_space, index, app)
@@ -39,4 +37,5 @@ if mode == "Combined Search":
 
                 
 # ---- Run the app ----
-# streamlit run semantic_food_search.py
+# streamlit run semantic_food_search.py 
+#open in browser: http://localhost:8501

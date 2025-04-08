@@ -94,7 +94,7 @@ def numeric_search(food_item , description_space: str, calories_space: str, inde
     Parameters:
     - food_item (str): The food item schema.
     - description_space (str): The description space for similarity.
-    - energy_space (str): The energy space for calorie values.
+    - calories_space (str): The space for calorie values.
     - index (object): The index used for querying.
     - app (object): The application instance for querying.
 
