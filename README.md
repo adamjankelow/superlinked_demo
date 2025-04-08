@@ -32,8 +32,8 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
-   cd your-repo-name
+   git clone git@github.com:adamjankelow/superlinked_demo.git
+   cd superlinked_demo
    ```
 
 2. **Set Up a Virtual Environment:**
