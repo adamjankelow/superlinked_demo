@@ -1,24 +1,20 @@
 import pandas as pd
-import os
+from pathlib import Path
 import streamlit as st
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pathlib import Path
 from adjustText import adjust_text
 from superlinked import framework as sl
-from huggingface_hub import snapshot_download
-from config import settings
+# from huggingface_hub import snapshot_download
+from ..config import settings
 
 # ---- Load Data ----
-@st.cache_data
+# @st.cache_data
 def load_data():
-    current_dir = os.path.dirname(__file__)
-    
-    # Construct the absolute path to the dataset
-    dataset_path = os.path.join(current_dir, settings.data_path)
-    absolute_path = os.path.abspath(dataset_path)
-    df = pd.read_parquet(absolute_path)  # replace with your dataset path
+    # data.py is at <repo>/src/backend/utils/data.py
+    repo_root = Path(__file__).resolve().parents[3]
+    data_file = repo_root / settings.data_path
+    df = pd.read_parquet(data_file)
     return df
 
 
@@ -49,9 +45,9 @@ def build_superlinked_app(df):
     # food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model=settings.embedding_model, model_cache_dir=model_path)
 
     # # Spaces
-    description_space = sl.TextSimilaritySpace(text=food_item.description, model="../models/all-MiniLM-L6-v2")
+    description_space = sl.TextSimilaritySpace(text=food_item.description, model=settings.embedding_model)
     # Semantic similarity over food category text
-    food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model="../models/all-MiniLM-L6-v2")
+    food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model=settings.embedding_model)
 
     # Exact/category-level similarity (discrete match)
     food_category_categorical_space = sl.CategoricalSimilaritySpace(
