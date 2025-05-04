@@ -67,7 +67,7 @@ def weighted_search(
         .select_all()
     )
     res = app.query(q, query_text=query_text, food_category=food_category)
-    return sl.PandasConverter.to_pandas(res)[_COLS]
+    return sl.PandasConverter.to_pandas(res)
 
 
 # --------------------------- numeric search --------------------------- #

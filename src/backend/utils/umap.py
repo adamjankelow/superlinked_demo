@@ -1,11 +1,8 @@
-# backend/umap_cache.py
-"""
-Creates / loads a UMAP projection and stores it as a Parquet next to the raw
-embeddings file.  Idempotent: runs UMAP once, then reloads.
-"""
 
+"""
+Holds functions for creating and retrieving UMAP vectors
+"""
 from __future__ import annotations
-
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -13,7 +10,7 @@ from superlinked import framework as sl
 from ..config import settings  # <-- uses settings.data_path & settings.cache_dir
 
 
-def get_umap_df() -> pd.DataFrame:
+def load_umap_df() -> pd.DataFrame:
     """
     Returns a DataFrame with `umap_x`, `umap_y` + the original metadata.
     """

@@ -8,9 +8,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pa
 from backend.utils.data import (
     load_data,
     build_superlinked_app,
-    create_umap_df,
     plot_umap_scatter,
 )
+from backend.utils.umap import load_umap_df
 
 from backend.queries import (
     simple_search,
@@ -64,8 +64,11 @@ elif mode == "Weighted":
         st.dataframe(res)
         # return the top 10 results
         top10 = res.sort_values("similarity_score", ascending=False).head(10)
-        umap_df = create_umap_df(app, index, food_item, top10)
-        plot_umap_scatter(umap_df)
+        list_of_ids = top10.id.astype(int).tolist()
+        umap_df = load_umap_df()    
+        
+        umap_df_top10 = umap_df[umap_df.index.isin(list_of_ids)]
+        plot_umap_scatter(umap_df_top10)
 
 # --- numeric ---
 elif mode == "Numeric":
