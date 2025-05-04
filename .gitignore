@@ -5,9 +5,7 @@ __pycache__/
 *.pyd
 *.pyw
 *.pyz
-notebooks/umap.ipynb
-notebooks/food_database_demo.ipynb
-notebooks/01_exploration.ipynb
+notebooks/archived/
 venv/
 .DS_Store
 .env
