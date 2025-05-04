@@ -16,12 +16,14 @@ from backend.queries import (
     weighted_search,
     numeric_search,
     combined_search,
+)
+
+from backend.types import (
+    SearchInputs,
     WeightedParams,
     NumericParams,
     CombinedParams,
 )
-
-from backend.utils.types import SearchInputs
 
 
 @st.cache_resource

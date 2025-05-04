@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Tuple, Optional
 import pandas as pd
 from superlinked import framework as sl
-
+from .types import SearchInputs, WeightedParams, NumericParams, CombinedParams
 
 # ───────────────────────── context & inputs ─────────────────────────────
 @dataclass(frozen=True)
@@ -21,21 +21,6 @@ class SearchCtx:
     cal_space: object
 
 # ───────────────────────── weights (optional) ───────────────────────────
-@dataclass
-class WeightedParams:
-    desc_weight: float = 1.0
-    cat_weight: float = 1.0
-
-@dataclass
-class NumericParams:
-    desc_weight: float = 1.0
-    cal_weight: float = 1.0
-
-@dataclass
-class CombinedParams:
-    desc_weight: float = 1.0
-    cal_weight: float = 1.0
-
 
 _COLS = ["description", "food_category", "calories", "similarity_score"]
 
