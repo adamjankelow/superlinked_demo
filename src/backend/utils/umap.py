@@ -3,8 +3,10 @@
 Holds functions for creating and retrieving UMAP vectors
 """
 from __future__ import annotations
+import matplotlib.pyplot as plt
+import seaborn as sns
+from adjustText import adjust_text
 from pathlib import Path
-import numpy as np
 import pandas as pd
 from superlinked import framework as sl
 from ..config import settings  # <-- uses settings.data_path & settings.cache_dir
@@ -52,5 +54,42 @@ def create_umap_vectors(app, index, food_item, df:pd.DataFrame):
     umap_df = umap_df.join(df.set_index('fdc_id')[['description', 'food_category', 'calories']], how='inner')
 
     return umap_df
+
+
+
+def plot_umap_scatter(umap_df):
+    # Add a title and introductory text
+
+    # Create the figure
+    plt.figure(figsize=(12, 8))
+    sns.scatterplot(
+        x='dimension_1', 
+        y='dimension_2', 
+        hue='food_category', 
+        data=umap_df.head(10), 
+        s=100,  # Size of the dots
+        palette='viridis'
+    )
+
+    # Collect text objects for adjustment
+    texts = []
+    for i, row in umap_df.head(10).iterrows():
+        text = plt.text(row['dimension_1'] + 0.1, row['dimension_2'], row['description'], fontsize=9)
+        texts.append(text)
+
+    # Adjust text to avoid overlap
+    adjust_text(texts, arrowprops=dict(arrowstyle='->', color='gray', lw=0.5))
+
+    plt.title('UMAP Transformed Vectors of top 10 food items of search results')
+    plt.xlabel('Dimension 1')
+    plt.ylabel('Dimension 2')
+    plt.legend(title='Food Category', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    
+    return plt
+
+    # Display the plot in the Streamlit app
+  
+
 
 

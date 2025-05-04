@@ -1,12 +1,15 @@
 # frontend/main.py  ── Streamlit UI using SearchCtx with full, readable names
 import streamlit as st
+st.set_page_config(page_title="Semantic Food Search", page_icon="🥦")
 
 from backend.utils.data import (
     load_data,
     build_superlinked_app,
+)
+from backend.utils.umap import (
+    load_umap_df,
     plot_umap_scatter,
 )
-from backend.utils.umap import load_umap_df
 from backend.queries import (
     SearchCtx,
     simple_search,
@@ -40,7 +43,7 @@ def build_context():
 data_frame, ctx = build_context()
 
 # ── UI ─────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="Semantic Food Search", page_icon="🥦")
+
 st.title("🥦 Semantic Search on Food Database")
 
 mode = st.sidebar.radio("Mode", ["Simple", "Weighted", "Numeric", "Combined"])
@@ -57,6 +60,7 @@ elif mode == "Weighted":
     category_query    = st.text_input("Food category", "dessert")
     description_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
     category_weight    = st.slider("Category weight",    -3.0, 3.0, 1.0)
+
     if description_query and category_query:
         results = weighted_search(
             ctx,
@@ -65,11 +69,18 @@ elif mode == "Weighted":
             WeightedParams(description_weight, category_weight),
         )
         st.dataframe(results)
-
+        print(results.columns)
+    
         # UMAP for top‑10
         top10_ids = results.nlargest(10, "similarity_score").id.astype(int).tolist()
         umap_df_top10 = load_umap_df().loc[top10_ids]
-        plot_umap_scatter(umap_df_top10)
+        # Create the plot
+        st.title("UMAP Visualization of Food Items")
+        st.write("Here you can see the UMAP transformed vectors of the top 10 food items from the search results. Each point represents a food item, colored by its category.")
+        plt = plot_umap_scatter(umap_df_top10)
+        st.pyplot(plt)
+
+      
 
 # ── numeric ────────────────────────────────────────────────────────────
 elif mode == "Numeric":
@@ -105,3 +116,5 @@ else:
             CombinedParams(description_weight, calories_weight),
         )
         st.dataframe(results)
+
+# streamlit run frontend/main.py

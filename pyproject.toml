@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "superlinked-demo"
+version = "0.0.1"
+description = "Semantic food‑search demo (backend + Streamlit UI)"
+requires-python = ">=3.9"
+dependencies = [
+  "streamlit",
+  "superlinked",
+  "pandas",
+  "numpy",
+  "umap-learn",
+  "joblib",
+  "pydantic-settings",
+]
+
+# Tell setuptools that importable code lives in src/
+[tool.setuptools.package-dir]
+"" = "src"
+
+# Automatically include every package under src/, but you can
+# exclude frontend because it isn't importable.
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["frontend*"]     # backend will be found, frontend ignored
+
+# --- optional code‑style tooling ---
+[tool.black]
+line-length = 88
+[tool.ruff]
+line-length = 88
+[tool.mypy]
+python_version = "3.9"
+strict = true
