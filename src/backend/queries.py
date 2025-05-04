@@ -1,14 +1,28 @@
-# backend/queries.py
+
+"""
+This module provides query helper functions with clear and concise signatures.
+
+Shared resources are encapsulated within the SearchCtx class, while inputs specific to each caller are passed explicitly.
+"""
+
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Tuple, List
+from typing import Tuple
 import pandas as pd
 from superlinked import framework as sl
 
-_COLS = ["description", "food_category", "calories", "similarity_score"]
+# ───────────────────────── context + parameter packs ────────────────────
+@dataclass(frozen=True)
+class SearchCtx:
+    app: object
+    index: object
+    food_item: object
+    desc_space: object
+    cat_text_space: object
+    cat_cat_space: object
+    cal_space: object
 
 
-# --------------------------- parameter packs --------------------------- #
 @dataclass
 class WeightedParams:
     desc_weight: float = 1.0
@@ -18,122 +32,94 @@ class WeightedParams:
 @dataclass
 class NumericParams:
     desc_weight: float = 1.0
-    calories_weight: float = 1.0
+    cal_weight: float = 1.0
 
 
-# --------------------------- simple search --------------------------- #
-def simple_search(
-    app,
-    index,
-    food_item,
-    desc_space,
-    query_text: str,
-) -> pd.DataFrame:
+@dataclass
+class CombinedParams:
+    desc_weight: float = 1.0
+    cal_weight: float = 1.0
+
+
+_COLS = ["description", "food_category", "calories", "similarity_score"]
+
+
+# ───────────────────────── search functions ─────────────────────────────
+def simple_search(ctx: SearchCtx, query: str) -> pd.DataFrame:
     q = (
-        sl.Query(index)
-        .find(food_item)
-        .similar(desc_space, sl.Param("query_text"))
+        sl.Query(ctx.index)
+        .find(ctx.food_item)
+        .similar(ctx.desc_space, sl.Param("q"))
         .select_all()
     )
-    res = app.query(q, query_text=query_text)
+    res = ctx.app.query(q, q=query)
     return sl.PandasConverter.to_pandas(res)[_COLS]
 
 
-# --------------------------- weighted search --------------------------- #
 def weighted_search(
-    app,
-    index,
-    food_item,
-    desc_space,
-    cat_text_space,
-    cat_cat_space,
-    query_text: str,
-    food_category: str,
+    ctx: SearchCtx,
+    query: str,
+    category: str,
     p: WeightedParams,
 ) -> pd.DataFrame:
     q = (
         sl.Query(
-            index,
+            ctx.index,
             weights={
-                desc_space: p.desc_weight,
-                cat_text_space: p.cat_weight,
-                cat_cat_space: p.cat_weight,
+                ctx.desc_space: p.desc_weight,
+                ctx.cat_text_space: p.cat_weight,
+                ctx.cat_cat_space: p.cat_weight,
             },
         )
-        .find(food_item)
-        .similar(desc_space, sl.Param("query_text"))
-        .similar(cat_text_space, sl.Param("food_category"))
-        .similar(cat_cat_space, sl.Param("food_category"))
+        .find(ctx.food_item)
+        .similar(ctx.desc_space, sl.Param("q"))
+        .similar(ctx.cat_text_space, sl.Param("cat"))
+        .similar(ctx.cat_cat_space, sl.Param("cat"))
         .select_all()
     )
-    res = app.query(q, query_text=query_text, food_category=food_category)
-    return sl.PandasConverter.to_pandas(res)
+    res = ctx.app.query(q, q=query, cat=category)
+    return sl.PandasConverter.to_pandas(res)[_COLS]
 
 
-# --------------------------- numeric search --------------------------- #
 def numeric_search(
-    app,
-    index,
-    food_item,
-    desc_space,
-    cal_space,
-    query_text: str,
-    calories_val: int,
+    ctx: SearchCtx,
+    query: str,
+    calories: int,
     p: NumericParams,
 ) -> Tuple[pd.DataFrame, float]:
     q = (
         sl.Query(
-            index,
-            weights={desc_space: p.desc_weight, cal_space: p.calories_weight},
+            ctx.index,
+            weights={ctx.desc_space: p.desc_weight, ctx.cal_space: p.cal_weight},
         )
-        .find(food_item)
-        .similar(desc_space, sl.Param("query_text"))
-        .similar(cal_space, sl.Param("calories_val"))
+        .find(ctx.food_item)
+        .similar(ctx.desc_space, sl.Param("q"))
+        .similar(ctx.cal_space, sl.Param("cal"))
         .select_all()
     )
-    res = app.query(q, query_text=query_text, calories_val=calories_val)
+    res = ctx.app.query(q, q=query, cal=calories)
     df = sl.PandasConverter.to_pandas(res)[_COLS]
     top10 = df.head(10)
     return top10, (top10["calories"].mean() if not top10.empty else 0.0)
 
 
-# --------------------------- combined search --------------------------- #
-@dataclass
-class CombinedParams:
-    desc_weight: float = 1.0
-    calories_weight: float = 1.0
-
-
 def combined_search(
-    app,
-    index,
-    food_item,
-    desc_space,
-    cat_cat_space,
-    cal_space,
-    query_text: str,
-    category_filter: str,
-    calories_val: int,
+    ctx: SearchCtx,
+    query: str,
+    category: str,
+    calories: int,
     p: CombinedParams,
 ) -> pd.DataFrame:
-    """
-    Hard‑filters by `category_filter`, then applies text+calorie weighting.
-    """
     q = (
         sl.Query(
-            index,
-            weights={desc_space: p.desc_weight, cal_space: p.calories_weight},
+            ctx.index,
+            weights={ctx.desc_space: p.desc_weight, ctx.cal_space: p.cal_weight},
         )
-        .find(food_item)
-        .similar(cat_cat_space.category, sl.Param("category_filter"))
-        .similar(desc_space, sl.Param("query_text"))
-        .similar(cal_space, sl.Param("calories_val"))
+        .find(ctx.food_item)
+        .similar(ctx.cat_cat_space.category, sl.Param("cat"))
+        .similar(ctx.desc_space, sl.Param("q"))
+        .similar(ctx.cal_space, sl.Param("cal"))
         .select_all()
     )
-    res = app.query(
-        q,
-        category_filter=category_filter,
-        query_text=query_text,
-        calories_val=calories_val,
-    )
+    res = ctx.app.query(q, cat=category, q=query, cal=calories)
     return sl.PandasConverter.to_pandas(res)[_COLS]
