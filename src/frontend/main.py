@@ -69,8 +69,7 @@ elif mode == "Weighted":
             WeightedParams(description_weight, category_weight),
         )
         st.dataframe(results)
-        print(results.columns)
-    
+
         # UMAP for top‑10
         top10_ids = results.nlargest(10, "similarity_score").id.astype(int).tolist()
         umap_df_top10 = load_umap_df().loc[top10_ids]
@@ -117,4 +116,4 @@ else:
         )
         st.dataframe(results)
 
-# streamlit run frontend/main.py
+# streamlit run src/frontend/main.py

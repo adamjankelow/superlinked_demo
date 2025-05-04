@@ -4,6 +4,7 @@ import pandas as pd
 import superlinked as sl
 from src.backend.utils.data import load_data, build_superlinked_app
 from src.backend.utils.umap import create_umap_vectors
+from src.config import settings
 
 def main():
     # 1) load data
@@ -15,7 +16,7 @@ def main():
     umap_df = create_umap_vectors(app, index, food_item, df)
     print("umap_df created")
     # 4) save umap vectors
-    umap_df.to_parquet('data/umap_df.parquet')
+    umap_df.to_parquet(settings.umap_path)
     print("umap_df saved")
 
 if __name__ == "__main__":
