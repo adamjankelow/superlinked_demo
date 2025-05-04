@@ -21,12 +21,16 @@ from backend.queries import (
     NumericParams,
     CombinedParams,
 )
+@st.cache_data
+def load_data_for_frontend():
+    df = load_data()
+    return df
 
 st.set_page_config(page_title="Semantic Food Search", page_icon="🥦")
 st.title("🥦 Semantic Search on Food Database")
 
-# --- bootstrap ---
-df = load_data()
+
+df = load_data_for_frontend()
 app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space = (
     build_superlinked_app(df)
 )
@@ -58,6 +62,7 @@ elif mode == "Weighted":
             WeightedParams(dw, cw),
         )
         st.dataframe(res)
+        # return the top 10 results
         top10 = res.sort_values("similarity_score", ascending=False).head(10)
         umap_df = create_umap_df(app, index, food_item, top10)
         plot_umap_scatter(umap_df)

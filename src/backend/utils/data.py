@@ -9,7 +9,7 @@ from superlinked import framework as sl
 from ..config import settings
 
 # ---- Load Data ----
-# @st.cache_data
+
 def load_data():
     # data.py is at <repo>/src/backend/utils/data.py
     repo_root = Path(__file__).resolve().parents[3]
@@ -31,18 +31,6 @@ class FoodItem(sl.Schema):
 def build_superlinked_app(df):
     food_item = FoodItem()
     categories = df["food_category"].unique().tolist()
-      
-    # model_path = Path(snapshot_download(f"sentence-transformers/{settings.embedding_model}"))
-
-    # # Create the similarity space using the schema field
-    # description_space = sl.TextSimilaritySpace(
-    #         text=food_item.description,  # <-- must be a valid schema field
-    #         model=settings.embedding_model,
-    #         model_cache_dir=model_path
-    #     )
-    
-   
-    # food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model=settings.embedding_model, model_cache_dir=model_path)
 
     # # Spaces
     description_space = sl.TextSimilaritySpace(text=food_item.description, model=settings.embedding_model)
@@ -76,38 +64,51 @@ def build_superlinked_app(df):
     return app, index, food_item, description_space, food_category_text_space, food_category_categorical_space, calories_space
 
 
-def create_umap_df(app, index, food_item , results_df:pd.DataFrame, n_results:int=20):
+def get_umap_df() -> pd.DataFrame:
     """
-    Create a DataFrame with UMAP transformed vectors and food metadata
-    
-    Args:
-        app: Superlinked app instance
-        index: Index name
-        food_item: Food item name
-        results_df: DataFrame containing search results
-        n_results: Number of top results to include
-        
-    Returns:
-        DataFrame containing UMAP coordinates and food metadata
+    Returns a DataFrame with `umap_x`, `umap_y` + the original metadata.
     """
-    # Collect all vectors from the app
-    import umap
-    vs = sl.VectorSampler(app=app)
-    vector_collection = vs.get_all_vectors(index, food_item)
-    vectors = vector_collection.vectors
-    vector_df = pd.DataFrame(vectors, index=[int(id_) for id_ in vector_collection.id_list])
-    
-    # Transform vectors using UMAP
-    umap_transform = umap.UMAP(random_state=0, transform_seed=0, n_jobs=1, metric="cosine")
-    umap_transform = umap_transform.fit(vector_df)
-    umap_vectors = umap_transform.transform(vector_df)
-    umap_df = pd.DataFrame(umap_vectors, columns=["dimension_1", "dimension_2"], index=vector_df.index)
 
-    # Join with results metadata
-    results_df.id = results_df.id.astype(int)
-    umap_df = umap_df.join(results_df.head(n_results).set_index('id')[['description', 'food_category']], how='inner')
+    repo_root = Path(__file__).resolve().parents[3]
+    umap_file = repo_root / settings.umap_path
+    df = pd.read_parquet(umap_file)
+    return df
+
+
+
+
+# def create_umap_df(app, index, food_item , results_df:pd.DataFrame, n_results:int=20):
+#     """
+#     Create a DataFrame with UMAP transformed vectors and food metadata
     
-    return umap_df
+#     Args:
+#         app: Superlinked app instance
+#         index: Index name
+#         food_item: Food item name
+#         results_df: DataFrame containing search results
+#         n_results: Number of top results to include
+        
+#     Returns:
+#         DataFrame containing UMAP coordinates and food metadata
+#     """
+#     # Collect all vectors from the app
+#     import umap
+#     vs = sl.VectorSampler(app=app)
+#     vector_collection = vs.get_all_vectors(index, food_item)
+#     vectors = vector_collection.vectors
+#     vector_df = pd.DataFrame(vectors, index=[int(id_) for id_ in vector_collection.id_list])
+    
+#     # Transform vectors using UMAP
+#     umap_transform = umap.UMAP(random_state=0, transform_seed=0, n_jobs=1, metric="cosine")
+#     umap_transform = umap_transform.fit(vector_df)
+#     umap_vectors = umap_transform.transform(vector_df)
+#     umap_df = pd.DataFrame(umap_vectors, columns=["dimension_1", "dimension_2"], index=vector_df.index)
+
+#     # Join with results metadata
+#     results_df.id = results_df.id.astype(int)
+#     umap_df = umap_df.join(results_df.head(n_results).set_index('id')[['description', 'food_category']], how='inner')
+    
+#     return umap_df
 
 # Create UMAP DataFrame
 
