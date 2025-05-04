@@ -1,4 +1,4 @@
-# frontend/main.py  ── Streamlit UI using SearchCtx with full, readable names
+# frontend/main.py  ── Streamlit UI using SearchCtx with form-based searches
 import streamlit as st
 st.set_page_config(page_title="Semantic Food Search", page_icon="🥦")
 
@@ -48,20 +48,26 @@ st.title("🥦 Semantic Search on Food Database")
 
 mode = st.sidebar.radio("Mode", ["Simple", "Weighted", "Numeric", "Combined"])
 
-# ── simple ─────────────────────────────────────────────────────────────
+# ── Simple ─────────────────────────────────────────────────────────────────
 if mode == "Simple":
-    description_query = st.text_input("Food description", "cereal with sugar")
-    if description_query:
+    with st.form("simple_search_form"):
+        description_query = st.text_input("Food description", "cereal with sugar")
+        submitted         = st.form_submit_button("🔍 Search")
+
+    if submitted:
         st.dataframe(simple_search(ctx, description_query))
 
-# ── weighted ───────────────────────────────────────────────────────────
-elif mode == "Weighted":
-    description_query = st.text_input("Food description", "apple")
-    category_query    = st.text_input("Food category", "dessert")
-    description_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
-    category_weight    = st.slider("Category weight",    -3.0, 3.0, 1.0)
 
-    if description_query and category_query:
+# ── Weighted ───────────────────────────────────────────────────────────────
+elif mode == "Weighted":
+    with st.form("weighted_search_form"):
+        description_query  = st.text_input("Food description", "apple")
+        category_query     = st.text_input("Food category", "dessert")
+        description_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
+        category_weight    = st.slider("Category weight",    -3.0, 3.0, 1.0)
+        submitted          = st.form_submit_button("🔍 Search")
+
+    if submitted:
         results = weighted_search(
             ctx,
             description_query,
@@ -70,24 +76,24 @@ elif mode == "Weighted":
         )
         st.dataframe(results)
 
-        # UMAP for top‑10
-        top10_ids = results.nlargest(10, "similarity_score").id.astype(int).tolist()
-        umap_df_top10 = load_umap_df().loc[top10_ids]
-        # Create the plot
-        st.title("UMAP Visualization of Food Items")
-        st.write("Here you can see the UMAP transformed vectors of the top 10 food items from the search results. Each point represents a food item, colored by its category.")
-        plt = plot_umap_scatter(umap_df_top10)
-        st.pyplot(plt)
+        # UMAP for top-10
+        top10_ids      = results.nlargest(10, "similarity_score").id.astype(int).tolist()
+        umap_df_top10  = load_umap_df().loc[top10_ids]
+        st.write("#### UMAP Visualization of Top-10 Results")
+        fig = plot_umap_scatter(umap_df_top10)
+        st.pyplot(fig)
 
-      
 
-# ── numeric ────────────────────────────────────────────────────────────
+# ── Numeric ────────────────────────────────────────────────────────────────
 elif mode == "Numeric":
-    description_query = st.text_input("Food description", "chicken")
-    calories_target   = st.number_input("Calories per 100 g", 0, 1000, 200)
-    description_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
-    calories_weight    = st.slider("Calories weight",    -3.0, 3.0, 1.0)
-    if description_query:
+    with st.form("numeric_search_form"):
+        description_query  = st.text_input("Food description", "chicken")
+        calories_target    = st.number_input("Calories per 100 g", 0, 1000, 200)
+        description_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
+        calories_weight    = st.slider("Calories weight",    -3.0, 3.0, 1.0)
+        submitted          = st.form_submit_button("🔍 Search")
+
+    if submitted:
         top10, mean_calories = numeric_search(
             ctx,
             description_query,
@@ -96,17 +102,21 @@ elif mode == "Numeric":
         )
         st.dataframe(top10)
         st.bar_chart(top10.set_index("description")["calories"])
-        st.write(f"Mean calories (top‑10): **{mean_calories:.1f}**")
+        st.write(f"Mean calories (top-10): **{mean_calories:.1f}**")
 
-# ── combined ───────────────────────────────────────────────────────────
-else:
+
+# ── Combined ───────────────────────────────────────────────────────────────
+else:  # mode == "Combined"
     category_choices = sorted(data_frame.food_category.unique())
-    category_filter = st.selectbox("Food category filter", category_choices)
-    description_query = st.text_input("Food description")
-    calories_target   = st.number_input("Calories per 100 g", 0, 1000)
-    description_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
-    calories_weight    = st.slider("Calories weight",    -3.0, 3.0, 1.0)
-    if description_query:
+    with st.form("combined_search_form"):
+        category_filter    = st.selectbox("Food category filter", category_choices)
+        description_query  = st.text_input("Food description")
+        calories_target    = st.number_input("Calories per 100 g", 0, 1000)
+        description_weight = st.slider("Description weight", -3.0, 3.0, 1.0)
+        calories_weight    = st.slider("Calories weight",    -3.0, 3.0, 1.0)
+        submitted          = st.form_submit_button("🔍 Search")
+
+    if submitted:
         results = combined_search(
             ctx,
             description_query,
