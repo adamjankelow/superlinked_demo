@@ -1,6 +1,15 @@
 from dataclasses import dataclass
 from typing import Optional
 
+@dataclass(frozen=True)
+class SearchCtx:
+    app: object
+    index: object
+    food_item: object
+    desc_space: object
+    cat_text_space: object
+    cat_cat_space: object
+    cal_space: object
 
 @dataclass
 class SearchInputs:

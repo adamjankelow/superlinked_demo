@@ -4,21 +4,11 @@ Query functions with shared SearchCtx and structured SearchInputs.
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Tuple, Optional
+from typing import Tuple
 import pandas as pd
 from superlinked import framework as sl
-from .types import SearchInputs, WeightedParams, NumericParams, CombinedParams
+from .types import SearchInputs, WeightedParams, NumericParams, CombinedParams, SearchCtx
 
-# ───────────────────────── context & inputs ─────────────────────────────
-@dataclass(frozen=True)
-class SearchCtx:
-    app: object
-    index: object
-    food_item: object
-    desc_space: object
-    cat_text_space: object
-    cat_cat_space: object
-    cal_space: object
 
 # ───────────────────────── weights (optional) ───────────────────────────
 
