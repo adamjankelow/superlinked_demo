@@ -9,8 +9,8 @@ superlinked==22.7.0
 torch==2.6.0
 torch_xla==2.6.0
 tqdm==4.67.1
-transformers==4.41.0
-umap_learn==0.5.6
+transformers==4.50.3
+umap_learn==0.5.7
 
 
 #unneccssary dependencies
