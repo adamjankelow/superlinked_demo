@@ -1,5 +1,5 @@
 """
-Query functions with shared SearchCtx and structured SearchInputs.
+Query functions for semantic search using Superlinked.
 """
 
 from __future__ import annotations
@@ -9,7 +9,6 @@ from superlinked import framework as sl
 from .types import SearchInputs, WeightedParams, NumericParams, CombinedParams, SearchCtx
 
 
-# ───────────────────────── weights (optional) ───────────────────────────
 
 _COLS = ["description", "food_category", "calories", "similarity_score"]
 

@@ -57,9 +57,17 @@ def create_umap_vectors(app, index, food_item, df:pd.DataFrame):
 
 
 
-def plot_umap_scatter(umap_df):
-    # Add a title and introductory text
+def plot_umap_scatter(umap_df: pd.DataFrame) -> plt.Figure:
+    """
+    Plots a UMAP scatter plot for the top 10 food items based on search results.
 
+    Args:
+        umap_df (pd.DataFrame): DataFrame containing UMAP coordinates and food metadata.
+            Expected columns: ['dimension_1', 'dimension_2', 'food_category', 'description']
+
+    Returns:
+        plt.Figure: The matplotlib figure object containing the scatter plot.
+    """
     # Create the figure
     plt.figure(figsize=(12, 8))
     sns.scatterplot(
@@ -87,6 +95,7 @@ def plot_umap_scatter(umap_df):
     plt.tight_layout()
     
     return plt
+
 
     # Display the plot in the Streamlit app
   

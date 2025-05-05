@@ -63,15 +63,7 @@ def build_superlinked_app(df):
     return app, index, food_item, description_space, food_category_text_space, food_category_categorical_space, calories_space
 
 
-def get_umap_df() -> pd.DataFrame:
-    """
-    Returns a DataFrame with `umap_x`, `umap_y` + the original metadata.
-    """
 
-    repo_root = Path(__file__).resolve().parents[3]
-    umap_file = repo_root / settings.umap_path
-    df = pd.read_parquet(umap_file)
-    return df
 
 
 

@@ -1,12 +1,14 @@
 
-# 2) import & call
-import pandas as pd
-import superlinked as sl
+"""
+Generate and save UMAP vectors for food database embeddings.
+"""
+
 from src.backend.utils.data import load_data, build_superlinked_app
 from src.backend.utils.umap import create_umap_vectors
-from src.config import settings
+from src.backend.config import settings
 
 def main():
+    """Generate and save UMAP vectors for food database embeddings."""
     # 1) load data
     df = load_data()
     # 2) build superlinked app
