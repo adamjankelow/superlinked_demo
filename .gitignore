@@ -1,4 +1,4 @@
-superlinked_demo.egg-info
+
 __pycache__/
 *.pyc
 *.pyo
@@ -9,9 +9,7 @@ notebooks/archived/
 venv/
 .DS_Store
 .env
-notebooks/PhenoDS/
 code/PhenoDS/
+src/superlinked_demo.egg-info
 
 
-
-src/PhenoDS/

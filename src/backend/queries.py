@@ -3,7 +3,6 @@ Query functions with shared SearchCtx and structured SearchInputs.
 """
 
 from __future__ import annotations
-from dataclasses import dataclass
 from typing import Tuple
 import pandas as pd
 from superlinked import framework as sl
