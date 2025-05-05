@@ -57,29 +57,30 @@ A demo semantic search engine for food items built with Superlinked and Streamli
      streamlit run code/semantic_food_search.py
      ```
 
+
 ## Code Structure
 
-### `code/semantic_food_search.py`
-Main Streamlit application entry point that handles the UI and coordinates between different search modes.
-It should open in browser: http://localhost:8501
+### `src/frontend/main.py`
+This module serves as the main **Streamlit application UI**. It manages user interactions, renders forms, and displays search results along with UMAP visualizations. To launch the app, use the command:
 
-### `queries.py` 
-Contains the core search functionality implementations:
-- Simple semantic search
-- Weighted multi-criteria search  
-- Numeric range filtering
-- Combined search with categories
+### `src/backend/queries.py`  
+Core search logic using Superlinked.
 
-### `utils.py`
-Helper functions for:
-- Data loading and preprocessing
-- Building the Superlinked search index
-- UMAP visualization
-- Schema definitions
+### `src/backend/types.py`  
+Data classes for shared context and parameters.
 
-### `notebooks/`
-The Jupyter notebook includes demonstrations of the following:
-- Exploring potential improvements for enabling multi-language search with Streamlit.
-- Translating a raw food database into a structured format using Large Language Models (LLMs).
-- Utilizing additional parameters created for enhanced search capabilities with Superlinked.
+### `src/backend/utils/data.py`  
+Utility functions for loading data and building the Superlinked app/index.
+
+### `src/backend/utils/umap.py`  
+Helpers for UMAP projection and visualization; loads or caches `data/umap_df.parquet`.
+
+### `scripts/build_umap.py`  
+CLI script to generate and cache UMAP vectors for all embeddings, writing to `data/umap_df.parquet`.
+
+### `data/`  
+Directory for raw and derived data files (e.g., `sampled_food_db.parquet`, `umap_df.parquet`).
+
+### `notebooks/`  
+Jupyter notebooks for exploratory analysis and prototyping (e.g., multi-language search demo).
 
