@@ -18,16 +18,9 @@ class SearchInputs:
     calories_val: Optional[int] = None
 
 @dataclass
-class WeightedParams:
+@dataclass
+class SearchWeights:
     desc_weight: float = 1.0
     cat_weight: float = 1.0
-
-@dataclass
-class NumericParams:
-    desc_weight: float = 1.0
     cal_weight: float = 1.0
 
-@dataclass
-class CombinedParams:
-    desc_weight: float = 1.0
-    cal_weight: float = 1.0

@@ -12,15 +12,16 @@ from backend.queries import (
 from backend.types import (
     SearchCtx,
     SearchInputs,
-    WeightedParams,
-    NumericParams,
-    CombinedParams,
+    SearchWeights
 )
+
+from backend.config import settings
 
 # ───────────────────────── setup ─────────────────────────
 
 @st.cache_resource
 def build_context():
+    """Builds and returns the data and search context for the application."""
     df = load_data()
     app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space = build_superlinked_app(df)
     ctx = SearchCtx(app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space)
@@ -35,6 +36,7 @@ mode = st.sidebar.radio("Search Mode", ["Simple", "Weighted", "Numeric", "Combin
 # ───────────────────────── UI Components ─────────────────────────
 
 def render_simple_ui(ctx: SearchCtx):
+    """Render the UI for simple search mode."""
     with st.form("simple_search_form"):
         q = st.text_input("Food description", "cereal with sugar")
         submitted = st.form_submit_button("🔍 Search")
@@ -44,6 +46,7 @@ def render_simple_ui(ctx: SearchCtx):
 
 
 def render_weighted_ui(ctx: SearchCtx, df):
+    """Render the UI for weighted search mode."""
     with st.form("weighted_search_form"):
         q = st.text_input("Food description", "apple")
         cat = st.text_input("Food category", "dessert")
@@ -52,7 +55,7 @@ def render_weighted_ui(ctx: SearchCtx, df):
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, category_query=cat)
-        params = WeightedParams(dw, cw)
+        params = SearchWeights(dw, cw)
         results = weighted_search(ctx, inputs, params)
         st.dataframe(results)
         top10_ids = results.nlargest(10, "similarity_score").id.astype(int).tolist()
@@ -62,15 +65,16 @@ def render_weighted_ui(ctx: SearchCtx, df):
 
 
 def render_numeric_ui(ctx: SearchCtx):
+    """Render the UI for numeric search mode."""
     with st.form("numeric_search_form"):
         q = st.text_input("Food description", "chicken")
-        cal = st.number_input("Calories per 100 g", 0, 1000, 200)
-        dw = st.slider("Description weight", -3.0, 3.0, 1.0)
-        cw = st.slider("Calories weight",    -3.0, 3.0, 1.0)
+        cal = st.number_input("Calories per 100 g", min_value=settings.calories_min, max_value=settings.calories_max, value=200)
+        dw = st.slider("Description weight", min_value=-3.0, max_value=3.0, value=1.0)
+        cw = st.slider("Calories weight",    min_value=-3.0, max_value=3.0, value=1.0)
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, calories_val=cal)
-        params = NumericParams(dw, cw)
+        params = SearchWeights(dw, cw)
         top10, mean_cal = numeric_search(ctx, inputs, params)
         st.dataframe(top10)
         st.bar_chart(top10.set_index("description")["calories"])
@@ -78,17 +82,18 @@ def render_numeric_ui(ctx: SearchCtx):
 
 
 def render_combined_ui(ctx: SearchCtx, df):
+    """Render the UI for combined search mode."""
     cats = sorted(df.food_category.unique())
     with st.form("combined_search_form"):
         cat_filter = st.selectbox("Food category filter", cats)
         q = st.text_input("Food description")
-        cal = st.number_input("Calories per 100 g", 0, 1000)
+        cal = st.number_input("Calories per 100 g", min_value=settings.calories_min, max_value=settings.calories_max, value=200)
         dw = st.slider("Description weight", -3.0, 3.0, 1.0)
         cw = st.slider("Calories weight",    -3.0, 3.0, 1.0)
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, category_query=cat_filter, calories_val=cal)
-        params = CombinedParams(dw, cw)
+        params = SearchWeights(dw, cw)
         results = combined_search(ctx, inputs, params)
         st.dataframe(results)
 

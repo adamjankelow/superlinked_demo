@@ -11,6 +11,12 @@ from ..config import settings
 # ---- Load Data ----
 
 def load_data():
+    """
+    Load the food database from a Parquet file.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the food database.
+    """
     # data.py is at <repo>/src/backend/utils/data.py
     repo_root = Path(__file__).resolve().parents[3]
     data_file = repo_root / settings.data_path
@@ -18,9 +24,11 @@ def load_data():
     return df
 
 
-
 # ---- Define schema ----
 class FoodItem(sl.Schema):
+    """
+    Schema definition for a food item in the database.
+    """
     fdc_id : sl.IdField
     description : sl.String
     food_category : sl.String
@@ -29,6 +37,15 @@ class FoodItem(sl.Schema):
 
 # ---- Build Superlinked App ----
 def build_superlinked_app(df):
+    """
+    Build and configure the Superlinked application for semantic search.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the food database.
+
+    Returns:
+        tuple: A tuple containing the app, index, food_item, and various spaces.
+    """
     food_item = FoodItem()
     categories = df["food_category"].unique().tolist()
     # # Spaces
@@ -46,7 +63,7 @@ def build_superlinked_app(df):
         min_value=settings.calories_min,
         max_value=settings.calories_max,
         mode=sl.Mode.SIMILAR
-)
+    )
 
     index = sl.Index([description_space, food_category_text_space, food_category_categorical_space, calories_space])
 
@@ -61,9 +78,5 @@ def build_superlinked_app(df):
     )
 
     return app, index, food_item, description_space, food_category_text_space, food_category_categorical_space, calories_space
-
-
-
-
 
 
