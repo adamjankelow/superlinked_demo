@@ -4,10 +4,7 @@ Load the food database and build the Superlinked app.
 
 import pandas as pd
 from pathlib import Path
-import streamlit as st
-import matplotlib.pyplot as plt
-import seaborn as sns
-from adjustText import adjust_text
+from joblib import Memory
 from superlinked import framework as sl
 from ..config import settings
 from .schema import FoodItem
@@ -28,7 +25,10 @@ def load_data():
     return df
 
 
-# ---- Build Superlinked App ----
+
+memory = Memory(settings.cache_dir, verbose=0)
+
+@memory.cache
 def build_superlinked_app(df):
     """
     Build and configure the Superlinked application for semantic search.

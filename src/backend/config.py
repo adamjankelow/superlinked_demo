@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     data_path: Path = Path("data/sampled_food_db.parquet")
     umap_path: Path = Path("data/umap_df.parquet")
     embedding_model: str = "all-MiniLM-L6-v2"
+    cache_dir: Path = Path(".cache")
     calories_min: int = 0
     calories_max: int = 1000
 
