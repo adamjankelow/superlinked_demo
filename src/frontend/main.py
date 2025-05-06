@@ -27,6 +27,10 @@ def build_context():
     ctx = SearchCtx(app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space)
     return df, ctx
 
+@st.cache_data(show_spinner=False)
+def get_cached_umap():
+    return load_umap_df()
+
 df, ctx = build_context()
 
 st.title("🥦 Semantic Search on Food Database")
@@ -45,6 +49,8 @@ def render_simple_ui(ctx: SearchCtx):
         st.dataframe(simple_search(ctx, inputs))
 
 
+
+
 def render_weighted_ui(ctx: SearchCtx, df):
     """Render the UI for weighted search mode."""
     with st.form("weighted_search_form"):
@@ -59,7 +65,7 @@ def render_weighted_ui(ctx: SearchCtx, df):
         results = weighted_search(ctx, inputs, params)
         st.dataframe(results)
         top10_ids = results.nlargest(10, "similarity_score").id.astype(int).tolist()
-        umap_df_top10 = load_umap_df().loc[top10_ids]
+        umap_df_top10 = get_cached_umap().loc[top10_ids]
         st.write("#### UMAP Visualization of Top-10 Results")
         st.pyplot(plot_umap_scatter(umap_df_top10))
 

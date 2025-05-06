@@ -1,4 +1,6 @@
-# src/backend/data/schema.py
+"""
+Schema definition for a food item in the database.
+"""
 from superlinked import framework as sl
 
 class FoodItem(sl.Schema):

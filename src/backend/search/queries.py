@@ -63,7 +63,7 @@ def weighted_search(ctx: SearchCtx, inp: SearchInputs, p: SearchWeights) -> pd.D
         .select_all()
     )
     res = ctx.app.query(q, q=inp.description_query, cat=inp.category_query)
-    return sl.PandasConverter.to_pandas(res)[_COLS]
+    return sl.PandasConverter.to_pandas(res)
 
 
 def numeric_search(ctx: SearchCtx, inp: SearchInputs, p: SearchWeights) -> Tuple[pd.DataFrame, float]:

@@ -1,3 +1,7 @@
+"""
+Types for semantic search using Superlinked.
+"""
+
 from dataclasses import dataclass
 from typing import Optional
 

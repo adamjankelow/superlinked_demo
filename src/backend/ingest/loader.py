@@ -1,3 +1,7 @@
+"""
+Load the food database and build the Superlinked app.
+"""
+
 import pandas as pd
 from pathlib import Path
 import streamlit as st

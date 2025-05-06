@@ -8,6 +8,7 @@ import seaborn as sns
 from adjustText import adjust_text
 from pathlib import Path
 import pandas as pd
+import umap
 from superlinked import framework as sl
 from ..config import settings  
 
@@ -38,7 +39,7 @@ def create_umap_vectors(app, index, food_item, df:pd.DataFrame):
         DataFrame containing UMAP coordinates and food metadata
     """
     # Collect all vectors from the app
-    import umap
+ 
     vs = sl.VectorSampler(app=app)
     vector_collection = vs.get_all_vectors(index, food_item)
     vectors = vector_collection.vectors
