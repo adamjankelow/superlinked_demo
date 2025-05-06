@@ -26,11 +26,11 @@ def get_df():
 
 @st.cache_resource
 def build_context():
-    """Builds and returns the data and search context for the application."""
-    df = get_df()
-    app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space = build_superlinked_app(df)
-    ctx = SearchCtx(app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space)
+    df = load_data()
+    ctx = build_superlinked_app(df)
+    print(ctx.index)
     return df, ctx
+
 
 @st.cache_data(show_spinner=False)
 def get_umap():
@@ -52,8 +52,6 @@ def render_simple_ui(ctx: SearchCtx):
     if submitted:
         inputs = SearchInputs(description_query=q)
         st.dataframe(simple_search(ctx, inputs))
-
-
 
 
 def render_weighted_ui(ctx: SearchCtx, df):

@@ -4,6 +4,7 @@ Types for semantic search using Superlinked.
 
 from dataclasses import dataclass
 from typing import Optional
+import superlinked as sl
 
 @dataclass(frozen=True)
 class SearchCtx:
@@ -14,6 +15,7 @@ class SearchCtx:
     cat_text_space: object
     cat_cat_space: object
     cal_space: object
+
 
 @dataclass
 class SearchInputs:

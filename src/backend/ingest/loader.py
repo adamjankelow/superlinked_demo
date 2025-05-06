@@ -8,6 +8,7 @@ from joblib import Memory
 from superlinked import framework as sl
 from ..config import settings
 from .schema import FoodItem
+from ..search.types import SearchCtx
 
 # ---- Load Data ----
 
@@ -25,51 +26,37 @@ def load_data():
     return df
 
 
-
 memory = Memory(settings.cache_dir, verbose=0)
 
 @memory.cache
 def build_superlinked_app(df):
-    """
-    Build and configure the Superlinked application for semantic search.
+    """Builds and returns a fully-ingested Superlinked SearchCtx."""
+    schema = FoodItem()
+    categories = df.food_category.unique().tolist()
 
-    Args:
-        df (pd.DataFrame): The DataFrame containing the food database.
+    desc_space  = sl.TextSimilaritySpace(text=schema.description, model=settings.embedding_model)
+    cat_text    = sl.TextSimilaritySpace(text=schema.food_category,model=settings.embedding_model)
+    cat_cat     = sl.CategoricalSimilaritySpace(category_input=schema.food_category, categories=categories)
+    cal_space   = sl.NumberSpace(schema.calories,
+                                 min_value=settings.calories_min,
+                                 max_value=settings.calories_max,
+                                 mode=sl.Mode.SIMILAR)
 
-    Returns:
-        tuple: A tuple containing the app, index, food_item, and various spaces.
-    """
-    food_item = FoodItem()
-    categories = df["food_category"].unique().tolist()
-    # # Spaces
-    description_space = sl.TextSimilaritySpace(text=food_item.description, model=settings.embedding_model)
-    # Semantic similarity over food category text
-    food_category_text_space = sl.TextSimilaritySpace(text=food_item.food_category, model=settings.embedding_model)
-
-    # Exact/category-level similarity (discrete match)
-    food_category_categorical_space = sl.CategoricalSimilaritySpace(
-        category_input=food_item.food_category,
-        categories=categories
-    )
-    calories_space = sl.NumberSpace(
-        food_item.calories,
-        min_value=settings.calories_min,
-        max_value=settings.calories_max,
-        mode=sl.Mode.SIMILAR
-    )
-
-    index = sl.Index([description_space, food_category_text_space, food_category_categorical_space, calories_space])
-
-    # Set up engine
-    source = sl.InMemorySource(food_item)
+    index = sl.Index([desc_space, cat_text, cat_cat, cal_space])
+    source = sl.InMemorySource(schema)
     executor = sl.InMemoryExecutor(sources=[source], indices=[index])
     app = executor.run()
 
-    # Insert data
-    source.put(
-        df[["fdc_id", "description", "food_category", "calories"]].to_dict(orient="records")
+    records = df[["fdc_id","description","food_category","calories"]].to_dict(orient="records")
+    source.put(records)
+
+    return SearchCtx(
+        app=app,
+        index=index,
+        food_item=schema,
+        desc_space=desc_space,
+        cat_text_space=cat_text,
+        cat_cat_space=cat_cat,
+        cal_space=cal_space,
     )
-
-    return app, index, food_item, description_space, food_category_text_space, food_category_categorical_space, calories_space
-
 

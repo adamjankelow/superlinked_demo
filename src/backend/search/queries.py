@@ -63,7 +63,7 @@ def weighted_search(ctx: SearchCtx, inp: SearchInputs, p: SearchWeights) -> pd.D
         .select_all()
     )
     res = ctx.app.query(q, q=inp.description_query, cat=inp.category_query)
-    return sl.PandasConverter.to_pandas(res)
+    return sl.PandasConverter.to_pandas(res)[_COLS+['id']] #need the id for umap filtering
 
 
 def numeric_search(ctx: SearchCtx, inp: SearchInputs, p: SearchWeights) -> Tuple[pd.DataFrame, float]:
