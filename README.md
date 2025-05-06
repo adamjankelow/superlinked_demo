@@ -54,7 +54,7 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 4. **Run the Streamlit App:**
    - From the root of the project directory, execute:
      ```bash
-     streamlit run code/semantic_food_search.py
+     streamlit run src/frontend/main.py
      ```
 
 

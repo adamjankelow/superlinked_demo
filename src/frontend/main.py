@@ -2,7 +2,7 @@ import streamlit as st
 st.set_page_config(page_title="Semantic Food Search", page_icon="🥦")
 
 from backend.ingest.loader import load_data, build_superlinked_app
-from backend.ingest.umap import load_umap_df, plot_umap_scatter
+from backend.features.umap import load_umap_df, plot_umap_scatter
 from backend.search.queries import (
     simple_search,
     weighted_search,

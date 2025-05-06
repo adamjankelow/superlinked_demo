@@ -4,7 +4,7 @@ Generate and save UMAP vectors for food database embeddings.
 """
 
 from backend.ingest.loader import load_data, build_superlinked_app
-from src.backend.ingest.umap import create_umap_vectors
+from backend.features.umap import create_umap_vectors
 from src.backend.config import settings
 
 def main():
