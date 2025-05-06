@@ -19,16 +19,21 @@ from backend.config import settings
 
 # ───────────────────────── setup ─────────────────────────
 
+@st.cache_data()
+def get_df():
+    """Load the food database from a Parquet file."""
+    return load_data()
+
 @st.cache_resource
 def build_context():
     """Builds and returns the data and search context for the application."""
-    df = load_data()
+    df = get_df()
     app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space = build_superlinked_app(df)
     ctx = SearchCtx(app, index, food_item, desc_space, cat_text_space, cat_cat_space, cal_space)
     return df, ctx
 
 @st.cache_data(show_spinner=False)
-def get_cached_umap():
+def get_umap():
     return load_umap_df()
 
 df, ctx = build_context()
