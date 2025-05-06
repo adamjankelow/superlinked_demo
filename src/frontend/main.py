@@ -2,7 +2,7 @@ import streamlit as st
 st.set_page_config(page_title="Semantic Food Search", page_icon="🥦")
 
 from backend.ingest.loader import load_data, build_superlinked_app
-from backend.features.umap import load_umap_df, plot_umap_scatter
+from backend.features.umap import plot_umap_scatter, subset_top_n_umap
 from backend.search.queries import (
     simple_search,
     weighted_search,
@@ -28,13 +28,11 @@ def get_df():
 def build_context():
     df = load_data()
     ctx = build_superlinked_app(df)
-    print(ctx.index)
     return df, ctx
 
-
-@st.cache_data(show_spinner=False)
-def get_umap():
-    return load_umap_df()
+# @st.cache_data(show_spinner=False)
+# def get_umap():
+#     return load_umap_df()
 
 df, ctx = build_context()
 
@@ -64,11 +62,10 @@ def render_weighted_ui(ctx: SearchCtx, df):
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, category_query=cat)
-        params = SearchWeights(dw, cw)
+        params = SearchWeights(desc_weight=dw, cat_weight=cw)
         results = weighted_search(ctx, inputs, params)
         st.dataframe(results)
-        top10_ids = results.nlargest(10, "similarity_score").id.astype(int).tolist()
-        umap_df_top10 = get_umap().loc[top10_ids]
+        umap_df_top10 = subset_top_n_umap(results, top_n=10)
         st.write("#### UMAP Visualization of Top-10 Results")
         st.pyplot(plot_umap_scatter(umap_df_top10))
 
@@ -83,7 +80,7 @@ def render_numeric_ui(ctx: SearchCtx):
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, calories_val=cal)
-        params = SearchWeights(dw, cw)
+        params = SearchWeights(desc_weight=dw, cal_weight=cw)
         top10, mean_cal = numeric_search(ctx, inputs, params)
         st.dataframe(top10)
         st.bar_chart(top10.set_index("description")["calories"])
@@ -102,7 +99,7 @@ def render_combined_ui(ctx: SearchCtx, df):
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, category_query=cat_filter, calories_val=cal)
-        params = SearchWeights(dw, cw)
+        params = SearchWeights(desc_weight=dw, cal_weight=cw)
         results = combined_search(ctx, inputs, params)
         st.dataframe(results)
 
