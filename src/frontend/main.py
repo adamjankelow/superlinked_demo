@@ -70,7 +70,7 @@ def render_weighted_ui(ctx: SearchCtx, df):
         results = weighted_search(ctx, inputs, params)
         st.dataframe(results)
         top10_ids = results.nlargest(10, "similarity_score").id.astype(int).tolist()
-        umap_df_top10 = get_cached_umap().loc[top10_ids]
+        umap_df_top10 = get_umap().loc[top10_ids]
         st.write("#### UMAP Visualization of Top-10 Results")
         st.pyplot(plot_umap_scatter(umap_df_top10))
 
