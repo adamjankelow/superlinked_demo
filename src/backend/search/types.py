@@ -18,7 +18,6 @@ class SearchInputs:
     calories_val: Optional[int] = None
 
 @dataclass
-@dataclass
 class SearchWeights:
     desc_weight: float = 1.0
     cat_weight: float = 1.0

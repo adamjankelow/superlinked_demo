@@ -9,7 +9,7 @@ from adjustText import adjust_text
 from pathlib import Path
 import pandas as pd
 from superlinked import framework as sl
-from ..config import settings  # <-- uses settings.data_path & settings.cache_dir
+from ..config import settings  
 
 
 def load_umap_df() -> pd.DataFrame:

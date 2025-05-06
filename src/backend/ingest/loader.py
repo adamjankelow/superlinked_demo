@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from adjustText import adjust_text
 from superlinked import framework as sl
-# from huggingface_hub import snapshot_download
 from ..config import settings
+from .schema import FoodItem
 
 # ---- Load Data ----
 
@@ -17,22 +17,11 @@ def load_data():
     Returns:
         pd.DataFrame: A DataFrame containing the food database.
     """
-    # data.py is at <repo>/src/backend/utils/data.py
+
     repo_root = Path(__file__).resolve().parents[3]
     data_file = repo_root / settings.data_path
     df = pd.read_parquet(data_file)
     return df
-
-
-# ---- Define schema ----
-class FoodItem(sl.Schema):
-    """
-    Schema definition for a food item in the database.
-    """
-    fdc_id : sl.IdField
-    description : sl.String
-    food_category : sl.String
-    calories : sl.Float
 
 
 # ---- Build Superlinked App ----
