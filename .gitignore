@@ -11,5 +11,6 @@ venv/
 .env
 code/PhenoDS/
 src/superlinked_demo.egg-info
+.devcontainer/
 
 
