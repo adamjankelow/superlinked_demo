@@ -48,7 +48,8 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 
 3. **Install Dependencies:**
    ```bash
-   pip install -r requirements.txt
+   pip install --upgrade pip build
+   pip install --editable .         # or “pip install .” for a non-editable install
    ```
 
 4. **Run the Streamlit App:**
