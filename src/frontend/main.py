@@ -12,7 +12,8 @@ from backend.search.queries import (
 from backend.search.types import (
     SearchCtx,
     SearchInputs,
-    SearchWeights
+    CategoryWeights,
+    NumericWeights,
 )
 
 from backend.config import settings
@@ -53,7 +54,7 @@ def render_simple_ui(ctx: SearchCtx):
         st.dataframe(simple_search(ctx, inputs))
 
 
-def render_weighted_ui(ctx: SearchCtx, df):
+def render_weighted_ui(ctx: SearchCtx):
     """Render the UI for weighted search mode."""
     with st.form("weighted_search_form"):
         q = st.text_input("Food description", "apple")
@@ -63,7 +64,7 @@ def render_weighted_ui(ctx: SearchCtx, df):
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, category_query=cat)
-        params = SearchWeights(desc_weight=dw, cat_weight=cw)
+        params = CategoryWeights(desc_weight=dw, cat_weight=cw)
         results = weighted_search(ctx, inputs, params)
         st.dataframe(results)
         df_umap = get_umap()
@@ -82,7 +83,7 @@ def render_numeric_ui(ctx: SearchCtx):
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, calories_val=cal)
-        params = SearchWeights(desc_weight=dw, cal_weight=cw)
+        params = NumericWeights(desc_weight=dw, cal_weight=cw)
         top10, mean_cal = numeric_search(ctx, inputs, params)
         st.dataframe(top10)
         st.bar_chart(top10.set_index("description")["calories"])
@@ -101,7 +102,7 @@ def render_combined_ui(ctx: SearchCtx, df):
         submitted = st.form_submit_button("🔍 Search")
     if submitted:
         inputs = SearchInputs(description_query=q, category_query=cat_filter, calories_val=cal)
-        params = SearchWeights(desc_weight=dw, cal_weight=cw)
+        params = NumericWeights(desc_weight=dw, cal_weight=cw)
         results = combined_search(ctx, inputs, params)
         st.dataframe(results)
 
@@ -111,7 +112,7 @@ def render_combined_ui(ctx: SearchCtx, df):
 if mode == "Simple":
     render_simple_ui(ctx)
 elif mode == "Weighted":
-    render_weighted_ui(ctx, df)
+    render_weighted_ui(ctx)
 elif mode == "Numeric":
     render_numeric_ui(ctx)
 else:
