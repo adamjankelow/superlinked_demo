@@ -68,7 +68,7 @@ def render_weighted_ui(ctx: SearchCtx):
         results = weighted_search(ctx, inputs, params)
         st.dataframe(results)
         df_umap = get_umap()
-        df_umap_top10 = subset_top_n_umap(df_umap, results, top_n=10)
+        df_umap_top10 = subset_top_n_umap(df_umap, results, top_n=settings.umap_top_n_food_items)
         st.write("#### UMAP Visualization of Top-10 Results")
         st.pyplot(plot_umap_scatter(df_umap_top10))
 

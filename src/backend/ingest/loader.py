@@ -4,7 +4,6 @@ Load the food database and build the Superlinked app.
 
 import pandas as pd
 from pathlib import Path
-from joblib import Memory
 from superlinked import framework as sl
 from ..config import settings
 from .schema import FoodItem
@@ -25,8 +24,6 @@ def load_data():
     df = pd.read_parquet(data_file)
     return df
 
-
-memory = Memory(settings.cache_dir, verbose=0)
 
 
 def build_superlinked_app(df):
