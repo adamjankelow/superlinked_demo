@@ -28,7 +28,7 @@ def load_data():
 
 memory = Memory(settings.cache_dir, verbose=0)
 
-@memory.cache
+
 def build_superlinked_app(df):
     """Builds and returns a fully-ingested Superlinked SearchCtx."""
     schema = FoodItem()

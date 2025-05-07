@@ -11,7 +11,7 @@ import pandas as pd
 import umap
 from superlinked import framework as sl
 from ..config import settings  
-
+from ..search.types import SearchCtx
 
 def load_umap_df() -> pd.DataFrame:
     """
@@ -23,7 +23,7 @@ def load_umap_df() -> pd.DataFrame:
     df = pd.read_parquet(umap_file)
     return df
 
-def create_umap_vectors(app, index, food_item, df:pd.DataFrame):
+def create_umap_vectors(ctx: SearchCtx, df:pd.DataFrame):
     
     """
     Create a DataFrame with UMAP transformed vectors and food metadata
@@ -40,8 +40,8 @@ def create_umap_vectors(app, index, food_item, df:pd.DataFrame):
     """
     # Collect all vectors from the app
  
-    vs = sl.VectorSampler(app=app)
-    vector_collection = vs.get_all_vectors(index, food_item)
+    vs = sl.VectorSampler(app=ctx.app)
+    vector_collection = vs.get_all_vectors(ctx.index, ctx.food_item)
     vectors = vector_collection.vectors
     vector_df = pd.DataFrame(vectors, index=[int(id_) for id_ in vector_collection.id_list])
     
