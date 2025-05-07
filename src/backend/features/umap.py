@@ -56,23 +56,23 @@ def create_umap_vectors(app, index, food_item, df:pd.DataFrame):
 
     return umap_df
 
+
+
 def subset_top_n_umap(
+    umap_df: pd.DataFrame,
     results_df: pd.DataFrame,
     top_n: int = 10,
-    id_col: str = "id"
+    id_col: str = "id",
 ) -> pd.DataFrame:
     """
-    Given a search results DataFrame, pick the top_n rows by similarity_score,
-    extract their IDs, and return the matching UMAP coords + metadata.
+    Filter the cached UMAP DataFrame down to the top-N result IDs.
     """
     top_ids = (
         results_df
-        .nlargest(top_n, "similarity_score")
-        [id_col]
+        .nlargest(top_n, "similarity_score")[id_col]
         .astype(int)
         .tolist()
     )
-    umap_df = load_umap_df() 
     return umap_df.loc[top_ids]
 
 

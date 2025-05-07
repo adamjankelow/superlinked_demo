@@ -2,7 +2,7 @@ import streamlit as st
 st.set_page_config(page_title="Semantic Food Search", page_icon="🥦")
 
 from backend.ingest.loader import load_data, build_superlinked_app
-from backend.features.umap import plot_umap_scatter, subset_top_n_umap
+from backend.features.umap import plot_umap_scatter, load_umap_df, subset_top_n_umap
 from backend.search.queries import (
     simple_search,
     weighted_search,
@@ -30,9 +30,10 @@ def build_context():
     ctx = build_superlinked_app(df)
     return df, ctx
 
-# @st.cache_data(show_spinner=False)
-# def get_umap():
-#     return load_umap_df()
+@st.cache_data(show_spinner=False)
+def get_umap():
+    return load_umap_df()
+
 
 df, ctx = build_context()
 
@@ -65,9 +66,10 @@ def render_weighted_ui(ctx: SearchCtx, df):
         params = SearchWeights(desc_weight=dw, cat_weight=cw)
         results = weighted_search(ctx, inputs, params)
         st.dataframe(results)
-        umap_df_top10 = subset_top_n_umap(results, top_n=10)
+        df_umap = get_umap()
+        df_umap_top10 = subset_top_n_umap(df_umap, results, top_n=10)
         st.write("#### UMAP Visualization of Top-10 Results")
-        st.pyplot(plot_umap_scatter(umap_df_top10))
+        st.pyplot(plot_umap_scatter(df_umap_top10))
 
 
 def render_numeric_ui(ctx: SearchCtx):
