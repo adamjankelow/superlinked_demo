@@ -64,16 +64,16 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 ### `src/frontend/main.py`
 This module serves as the main **Streamlit application UI**. It manages user interactions, renders forms, and displays search results along with UMAP visualizations. To launch the app, use the command:
 
-### `src/backend/queries.py`  
+### `src/backend/search/queries.py`  
 Core search logic using Superlinked.
 
-### `src/backend/types.py`  
+### `src/backend/search/types.py`  
 Data classes for shared context and parameters.
 
-### `src/backend/utils/data.py`  
+### `src/backend/ingest/loader.py`  
 Utility functions for loading data and building the Superlinked app/index.
 
-### `src/backend/utils/umap.py`  
+### `src/backend/features/umap.py`  
 Helpers for UMAP projection and visualization; loads or caches `data/umap_df.parquet`.
 
 ### `scripts/build_umap.py`  
