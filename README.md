@@ -23,7 +23,7 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 
 ### Combined Search
 - Unified interface for all search modes
-- Hard filtering by food categories
+- Filtering by food categories
 - Flexible combination of search criteria
 - Optimized for intuitive exploration
 

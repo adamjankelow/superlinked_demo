@@ -15,6 +15,10 @@ dependencies = [
   "umap-learn",
   "joblib",
   "pydantic-settings",
+  "matplotlib",     # for plotting
+  "seaborn",        # used in UMAP scatter
+  "adjustText",     # for label adjustment
+  "scipy",          # for UMAP
 ]
 
 # Tell setuptools that importable code lives in src/
