@@ -30,6 +30,8 @@ A demo semantic search engine for food items built with Superlinked and Streamli
 
 ## 🔧 Installation
 
+This project is compatible with Python 3.11. Please ensure you have Python 3.11 installed before proceeding.
+
 1. **Clone the Repository:**
    ```bash
    git clone git@github.com:adamjankelow/superlinked_demo.git
