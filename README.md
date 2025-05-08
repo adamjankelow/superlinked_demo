@@ -81,6 +81,9 @@ Data classes for shared context and parameters.
 ### `src/backend/ingest/loader.py`  
 Utility functions for loading data and building the Superlinked app/index.
 
+### `src/backend/ingest/schema.py`  
+Defines the schema for food items in the database.
+
 ### `src/backend/features/umap.py`  
 Helpers for UMAP projection and visualization; loads or caches `data/umap_df.parquet`.
 
