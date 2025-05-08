@@ -66,7 +66,7 @@ To generate the UMAP vectors, execute the following command from the root direct
 
    ```bash
      python -m scripts.build_umap 
-     ```
+   ```
 ## Code Structure
 
 ### `src/frontend/main.py`
@@ -93,4 +93,3 @@ Directory for raw and derived data files (e.g., `sampled_food_db.parquet`, `umap
 ### `notebooks/`  
 Jupyter notebooks for exploratory analysis and prototyping (e.g., multi-language search demo).
 
-Data Ingestion EfficiencyCaches food DB and full Superlinked setup so init runs once and UI is much snappier.Business Logic / UI Separationsrc/frontend (Streamlit) vs src/backend with ingest, features, search.UI just gathers inputs and renders results; all logic lives in the backend.Function Parameter ManagementOne setup function returns a SearchCtx.Each search takes exactly three focused dataclasses (defined in backend/search/types.py).Configuration ManagementAll paths, models and defaults in a Pydantic Settings class.Only ENV in the .env file.UMAP PerformanceOffline script builds UMAP and saves it to disk.UI loads cached embeddings and slices top-N—no retraining on every interaction.
