@@ -27,7 +27,7 @@ def get_df():
 
 @st.cache_resource
 def build_context():
-    df = load_data()
+    df = get_df()
     ctx = build_superlinked_app(df)
     return df, ctx
 

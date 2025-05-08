@@ -123,6 +123,8 @@ def plot_umap_scatter(umap_df: pd.DataFrame) -> plt.Figure:
     return plt
 
 
+
+
    
 
 
