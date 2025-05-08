@@ -27,12 +27,29 @@ def load_data():
 
 
 def build_superlinked_app(df):
-    """Builds and returns a fully-ingested Superlinked SearchCtx."""
+    """
+    Constructs and returns a fully-ingested Superlinked SearchCtx object.
+
+    This function initializes the schema for food items and sets up various
+    similarity spaces for text, categorical, and numerical data. It builds
+    an index using these spaces and ingests the provided DataFrame into an
+    in-memory source. The function then executes the Superlinked application
+    and returns a SearchCtx object containing the application context, index,
+    and similarity spaces.
+
+    Args:
+        df (pd.DataFrame): A DataFrame containing food data with columns
+                           'fdc_id', 'description', 'food_category', and 'calories'.
+
+    Returns:
+        SearchCtx: An object containing the Superlinked application context,
+                   index, and similarity spaces for further search operations.
+    """
     schema = FoodItem()
     categories = df.food_category.unique().tolist()
 
     desc_space  = sl.TextSimilaritySpace(text=schema.description, model=settings.embedding_model)
-    cat_text    = sl.TextSimilaritySpace(text=schema.food_category,model=settings.embedding_model)
+    cat_text    = sl.TextSimilaritySpace(text=schema.food_category, model=settings.embedding_model)
     cat_cat     = sl.CategoricalSimilaritySpace(category_input=schema.food_category, categories=categories)
     cal_space   = sl.NumberSpace(schema.calories,
                                  min_value=settings.calories_min,
@@ -44,7 +61,7 @@ def build_superlinked_app(df):
     executor = sl.InMemoryExecutor(sources=[source], indices=[index])
     app = executor.run()
 
-    records = df[["fdc_id","description","food_category","calories"]].to_dict(orient="records")
+    records = df[["fdc_id", "description", "food_category", "calories"]].to_dict(orient="records")
     source.put(records)
 
     return SearchCtx(

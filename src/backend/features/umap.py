@@ -56,8 +56,6 @@ def create_umap_vectors(ctx: SearchCtx, df:pd.DataFrame):
 
     return umap_df
 
-
-
 def subset_top_n_umap(
     umap_df: pd.DataFrame,
     results_df: pd.DataFrame,
@@ -66,6 +64,15 @@ def subset_top_n_umap(
 ) -> pd.DataFrame:
     """
     Filter the cached UMAP DataFrame down to the top-N result IDs.
+
+    Args:
+        umap_df (pd.DataFrame): DataFrame containing UMAP coordinates and metadata.
+        results_df (pd.DataFrame): DataFrame containing search results with similarity scores.
+        top_n (int, optional): Number of top results to include. Defaults to 10.
+        id_col (str, optional): Column name for IDs in results_df. Defaults to "id".
+
+    Returns:
+        pd.DataFrame: Filtered DataFrame with UMAP coordinates for the top-N results.
     """
     top_ids = (
         results_df
@@ -116,8 +123,7 @@ def plot_umap_scatter(umap_df: pd.DataFrame) -> plt.Figure:
     return plt
 
 
-    # Display the plot in the Streamlit app
-  
+   
 
 
 
