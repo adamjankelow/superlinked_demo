@@ -58,7 +58,15 @@ A demo semantic search engine for food items built with Superlinked and Streamli
      streamlit run src/frontend/main.py
      ```
 
+## Optional: Generate UMAP Vectors
 
+If the UMAP vectors need to be created or updated, you can run the script to generate and save them. This is necessary if there have been changes to the food database or the UMAP configuration.
+
+To generate the UMAP vectors, execute the following command from the root directory:
+
+   ```bash
+     python -m scripts.build_umap 
+     ```
 ## Code Structure
 
 ### `src/frontend/main.py`
